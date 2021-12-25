@@ -1,31 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <input v-model="time" @blur="changeTimePattern"/>
   </div>
 </template>
 
@@ -33,10 +8,166 @@
 export default {
   name: 'HelloWorld',
   props: {
-    msg: String
+    value: String
+  },
+  computed: {
+    time: {
+      get(){
+        if(this.value && this.value.length > 4){
+          return this.value.split(':')[0] + ':' + this.value.split(':')[1]
+        }
+        return this.value
+      },
+      set(val){
+        val.replace(/\w/ , '')
+        if(val && val.length === 5){
+          this.$emit('input' , `${val}:00`)
+          return
+        }
+        this.$emit('input' , val)
+      }
+    }
+  },
+  watch:{
+    time(newValue , oldValue){
+       
+      if(newValue.length === 6){
+        console.log('666')
+        this.time = this.time.slice(0 ,5)
+      }
+
+      if(newValue.length > 5){
+        console.log('we are here', oldValue)
+        this.time = oldValue
+      }
+
+      if(newValue.length > 5){
+        this.time = oldValue
+      }
+
+      if(newValue.length === 1 && newValue > 2){
+        this.time = '0' + newValue + ':'
+      }
+
+      if(newValue > 9 && newValue < 24  && newValue.length === 2 && newValue.length > oldValue.length){
+        console.log('sd')
+        this.time = newValue + ':'
+      }
+
+       if(newValue > 23  && newValue.length > oldValue.length){
+        console.log('sd')
+        this.time = this.time.slice(0 ,2) + ':' +this.time.slice(2)
+      }
+
+      if(newValue > 23 && newValue.length === 2){
+        this.time = '00:'
+      }
+
+      if(newValue.includes(':') && newValue.split(':')[0] > 23){
+        this.time = '00:' + newValue.split(':')[1]
+      }
+
+      if(newValue.includes(':') && !newValue.split(':')[0] && !newValue.split(':')[1] && newValue.length > oldValue.length){
+        console.log(newValue , oldValue)
+        this.time = '00:'
+      }
+
+      if(newValue.includes(':') && newValue.split(':')[0].length === 1 && newValue.split(':')[0] > 2){
+        this.time = '0' + newValue
+      }
+
+      if(newValue.includes(':') && newValue.split(':')[1].length === 1 &&  newValue.split(':')[1] > 5 ){
+        this.time =  newValue.split(':')[0] + ':' + '0' + newValue.split(':')[1]
+      }
+
+      if(newValue.includes(':') && newValue.split(':')[1].length &&  newValue.split(':')[1] > 59 && newValue.split(':')[1].length === 2){
+        this.time =  newValue.split(':')[0] + ':' + '00'
+      }
+    }
+  },
+  methods: {
+    changeTimePattern(){
+
+      if(this.time.split(':')[0] && !this.time.split(':')[1] && this.time.split(':')[0].length === 2 ){
+        this.time = this.time.split(':')[0] + ':00'
+      }
+
+      if(this.time.includes(':') && !this.time.split(':')[0]){
+        this.time = '00:' + this.time.split(':')[1]
+      }
+
+      if(this.time.includes(':') && !this.time.split(':')[0]){
+         this.time = this.time.split(':')[0] + ':00'
+      }
+
+      if(this.time.length === 1 && !this.time.includes(':')){
+        this.time = '0' + this.time + ':00'
+      }
+
+      if(!this.time.split(':')[0].length && this.time.includes(':')){
+        this.time = '00' + this.time
+      }
+
+      if(!this.time.includes(':') && this.time.length){
+        this.time = this.time.slice(0 ,2) + ':' + this.time.slice(2,4)
+      }
+
+      if(this.time.includes(':') && this.time.split(':')[1] == 0 ){
+        this.time = this.time.split(':')[0] + ':00' 
+      }
+
+      if(!this.time.includes(':') && this.time.length  && this.time.length === 3){
+        this.time = this.time.slice(0 ,2) + ':' + this.time.slice(2,3) + '0'
+      }
+
+      if(this.time.includes(':')  && this.time.split(':')[1].length === 1){
+        this.time = this.time.slice(0 ,2) + ':0' + this.time.slice(3) 
+      }
+
+      if(this.time.includes(':')  && this.time.split(':')[0].length === 1){
+        this.time = '0' + this.time.split(':')[0] + ':' + this.time.split(':')[1] 
+      }
+
+      if(this.time.includes(':')  && this.time.split(':')[0].length === 1 && this.time.split(':')[1].length === 1){
+        this.time = '0' + this.time.split(':')[0] + ':0' + this.time.split(':')[1] 
+      }
+
+      if(!this.time.includes(':') && this.time.length ===1){
+        this.time = '0' + this.time + ':00'
+      }
+
+      if(!this.time.includes(':') && this.time > 9 && this.time < 24){
+        this.time = this.time + ':00'
+      }
+
+      if(!this.time.includes(':') && this.time == '00' ){
+        this.time = this.time + ':00'
+      }
+
+      if(this.time.includes(':') && this.time.length === 1 ){
+        this.time = '00:00'
+      }
+
+      
+    }
   }
+  
 }
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
