@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'TimeInput',
   props: {
     value: String
   },
@@ -19,7 +19,6 @@ export default {
         return this.value
       },
       set(val){
-        val.replace(/\w/ , '')
         if(val && val.length === 5){
           this.$emit('input' , `${val}:00`)
           return
@@ -30,14 +29,13 @@ export default {
   },
   watch:{
     time(newValue , oldValue){
-       
-      if(newValue.length === 6){
-        console.log('666')
-        this.time = this.time.slice(0 ,5)
+
+      
+      if((/[a-zA-Z;!@#$%^&*()_-]/).test(newValue)){
+        this.time = oldValue
       }
 
-      if(newValue.length > 5){
-        console.log('we are here', oldValue)
+      if((/::/).test(newValue)){
         this.time = oldValue
       }
 
@@ -49,13 +47,15 @@ export default {
         this.time = '0' + newValue + ':'
       }
 
+      if(newValue.length === 2 && !newValue.includes(':') && newValue.length > oldValue.length){
+        this.time = newValue + ':'
+      }
+
       if(newValue > 9 && newValue < 24  && newValue.length === 2 && newValue.length > oldValue.length){
-        console.log('sd')
         this.time = newValue + ':'
       }
 
        if(newValue > 23  && newValue.length > oldValue.length){
-        console.log('sd')
         this.time = this.time.slice(0 ,2) + ':' +this.time.slice(2)
       }
 
@@ -87,6 +87,7 @@ export default {
   },
   methods: {
     changeTimePattern(){
+     
 
       if(this.time.split(':')[0] && !this.time.split(':')[1] && this.time.split(':')[0].length === 2 ){
         this.time = this.time.split(':')[0] + ':00'
@@ -140,7 +141,7 @@ export default {
         this.time = this.time + ':00'
       }
 
-      if(!this.time.includes(':') && this.time == '00' ){
+      if(!this.time.includes(':') && (this.time == '00' || this.time == '01' || this.time == '02') ){
         this.time = this.time + ':00'
       }
 
