@@ -14,6 +14,7 @@ export default {
     time: {
       get(){
         if(this.value && this.value.length > 4){
+          if(this.value.split(':')[2] === '') return this.value +' :00'
           return this.value.split(':')[0] + ':' + this.value.split(':')[1]
         }
         return this.value
@@ -29,8 +30,9 @@ export default {
   },
   watch:{
     time(newValue , oldValue){
-
       
+      console.log(this.value)
+ 
       if((/[a-zA-Z;!@#$%^&*()_-]/).test(newValue)){
         this.time = oldValue
       }
@@ -82,6 +84,10 @@ export default {
 
       if(newValue.includes(':') && newValue.split(':')[1].length &&  newValue.split(':')[1] > 59 && newValue.split(':')[1].length === 2){
         this.time =  newValue.split(':')[0] + ':' + '00'
+      }
+
+      if(oldValue.includes(':') && newValue[newValue.length - 1] === ':' && newValue.length > oldValue.length){
+        this.time = oldValue
       }
     }
   },
